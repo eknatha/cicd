@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CICDLab — CI/CD & GitOps by EknathaLabs</title>
+<meta name="description" content="Master CI/CD and GitOps — GitHub Actions, ArgoCD, pipelines. 8 offline tools, 100-question quiz, cheatsheet, error encyclopedia. Built by a Platform Engineer.">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --border2: #484f58;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #6e7681;
+    --green: #3fb950;
+    --green-dim: #1a3c1e;
+    --green-bright: #56d364;
+    --blue: #58a6ff;
+    --blue-dim: #1a2d4a;
+    --purple: #bc8cff;
+    --purple-dim: #2d1f4a;
+    --amber: #e3b341;
+    --amber-dim: #3d2e0a;
+    --red: #f85149;
+    --red-dim: #3d1414;
+    --cyan: #39d0d8;
+    --cyan-dim: #0d2f30;
+    --accent: #3fb950;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --font-sans: 'DM Sans', 'Segoe UI', sans-serif;
+  }
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --bg2: #f6f8fa;
+    --bg3: #eaeef2;
+    --border: #d0d7de;
+    --border2: #b0b8c2;
+    --text: #1f2328;
+    --text2: #57606a;
+    --text3: #8c959f;
+    --green: #1a7f37;
+    --green-dim: #dafbe1;
+    --green-bright: #1a7f37;
+    --blue: #0969da;
+    --blue-dim: #ddf4ff;
+    --purple: #8250df;
+    --purple-dim: #fbefff;
+    --amber: #9a6700;
+    --amber-dim: #fff8c5;
+    --red: #cf222e;
+    --red-dim: #fff0ee;
+    --cyan: #0598a8;
+    --cyan-dim: #e0f8f9;
+    --accent: #1a7f37;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem; height: 52px;
+  }
+  .nav-logo {
+    font-family: var(--font-mono); font-size: 15px; color: var(--green);
+    text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 700;
+  }
+  .nav-logo span { color: var(--text2); font-weight: 400; }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 13px;
+    padding: 5px 10px; border-radius: 6px; transition: all 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--bg3); }
+  .nav-right { display: flex; align-items: center; gap: 8px; }
+  #theme-btn {
+    background: none; border: 1px solid var(--border); color: var(--text2);
+    cursor: pointer; padding: 5px 10px; border-radius: 6px; font-size: 13px; transition: all 0.15s;
+  }
+  #theme-btn:hover { background: var(--bg3); color: var(--text); }
+  .nav-ext { font-size: 12px; color: var(--text3); }
+  .nav-ext a { color: var(--text3); text-decoration: none; }
+  .nav-ext a:hover { color: var(--text2); }
+
+  /* HERO */
+  .hero {
+    border-bottom: 1px solid var(--border);
+    padding: 3.5rem 1.5rem 3rem;
+    max-width: 900px; margin: 0 auto;
+  }
+  .hero-tag {
+    font-family: var(--font-mono); font-size: 11px; color: var(--green);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700;
+    line-height: 1.2; color: var(--text); margin-bottom: 0.75rem;
+  }
+  .hero h1 em { color: var(--green); font-style: normal; }
+  .hero p { color: var(--text2); font-size: 15px; max-width: 580px; margin-bottom: 1.5rem; }
+  .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 2rem; }
+  .btn-primary {
+    background: var(--green); color: #000; font-weight: 600; border: none;
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    text-decoration: none; transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-ghost {
+    background: none; color: var(--text2); border: 1px solid var(--border);
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    text-decoration: none; transition: all 0.15s;
+  }
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
+
+  /* TERMINAL */
+  .terminal {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; max-width: 680px; font-size: 13px;
+  }
+  .term-bar {
+    background: var(--bg3); padding: 8px 14px;
+    display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);
+  }
+  .term-dots { display: flex; gap: 6px; }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot:nth-child(1) { background: #f85149; }
+  .term-dot:nth-child(2) { background: #e3b341; }
+  .term-dot:nth-child(3) { background: #3fb950; }
+  .term-title { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin: 0 auto; }
+  .term-body { padding: 1rem 1.25rem; font-family: var(--font-mono); line-height: 1.8; }
+  .term-prompt { color: var(--green); }
+  .term-cmd { color: var(--text); }
+  .term-out { color: var(--text2); }
+  .term-ok { color: var(--green); }
+  .term-err { color: var(--red); }
+  .term-warn { color: var(--amber); }
+  .term-info { color: var(--blue); }
+  .term-comment { color: var(--text3); }
+
+  /* STATS */
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    padding: 1.5rem; max-width: 900px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.75rem 1.25rem; text-align: center; min-width: 90px;
+  }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--green); font-family: var(--font-mono); }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* SECTION */
+  section { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; border-bottom: 1px solid var(--border); }
+  .section-head { margin-bottom: 1.5rem; }
+  .section-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .section-head h2 { font-size: 1.3rem; font-weight: 600; color: var(--text); }
+  .section-head p { font-size: 14px; color: var(--text2); margin-top: 4px; }
+
+  /* FILTER TABS */
+  .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .ftab {
+    font-size: 12px; padding: 4px 12px; border-radius: 20px;
+    border: 1px solid var(--border); color: var(--text2); background: none;
+    cursor: pointer; transition: all 0.15s; font-family: var(--font-mono);
+  }
+  .ftab:hover { border-color: var(--border2); color: var(--text); }
+  .ftab.active { background: var(--green-dim); border-color: var(--green); color: var(--green-bright); }
+
+  /* MODULE GRID */
+  .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .module-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.1rem; cursor: pointer; transition: all 0.15s;
+  }
+  .module-card:hover { border-color: var(--border2); background: var(--bg3); }
+  .module-card[data-open="true"] { border-color: var(--green); }
+  .module-header { display: flex; align-items: flex-start; gap: 10px; }
+  .module-icon { font-size: 20px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+  .module-info { flex: 1; }
+  .module-level {
+    font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 4px; display: inline-block; margin-bottom: 4px;
+  }
+  .level-beginner { background: var(--green-dim); color: var(--green-bright); border: 1px solid var(--green); }
+  .level-intermediate { background: var(--blue-dim); color: var(--blue); border: 1px solid #1e4580; }
+  .level-advanced { background: var(--purple-dim); color: var(--purple); border: 1px solid #5a3b8a; }
+  .level-cka { background: var(--amber-dim); color: var(--amber); border: 1px solid #5c4010; }
+  .module-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .module-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .module-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+  .mtag {
+    font-size: 10px; font-family: var(--font-mono); padding: 2px 7px;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: var(--text3);
+  }
+  .module-body { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); display: none; }
+  .module-card[data-open="true"] .module-body { display: block; }
+  .module-body h4 { font-size: 12px; color: var(--text3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem; }
+  .module-body ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .module-body ul li { font-size: 13px; color: var(--text2); padding-left: 14px; position: relative; line-height: 1.5; }
+  .module-body ul li::before { content: '→'; position: absolute; left: 0; color: var(--green); font-size: 11px; top: 2px; }
+  .module-body code { font-family: var(--font-mono); font-size: 11px; background: var(--bg3); padding: 1px 5px; border-radius: 3px; color: var(--cyan); }
+
+  /* TOOLS GRID */
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .tool-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+  .tool-header {
+    padding: 1rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .tool-icon { font-size: 18px; }
+  .tool-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .tool-type {
+    font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; border-radius: 4px;
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text3); margin-left: auto;
+  }
+  .tool-body { padding: 1rem; }
+  .tool-body label { font-size: 11px; color: var(--text3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 5px; }
+  .tool-body textarea, .tool-body input, .tool-body select {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: 12px;
+    padding: 8px 10px; resize: vertical; transition: border-color 0.15s;
+  }
+  .tool-body textarea:focus, .tool-body input:focus, .tool-body select:focus {
+    outline: none; border-color: var(--green);
+  }
+  .tool-body select option { background: var(--bg3); }
+  .tool-run {
+    margin-top: 10px; width: 100%; background: var(--green); color: #000;
+    border: none; border-radius: 6px; padding: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .tool-run:hover { opacity: 0.85; }
+  .tool-output {
+    margin-top: 10px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px; font-family: var(--font-mono); font-size: 12px;
+    color: var(--text2); white-space: pre-wrap; display: none; max-height: 280px; overflow-y: auto; line-height: 1.7;
+  }
+  .tool-output.visible { display: block; }
+  .tool-output .ok { color: var(--green); }
+  .tool-output .warn { color: var(--amber); }
+  .tool-output .err { color: var(--red); }
+  .tool-output .info { color: var(--blue); }
+  .tool-output .comment { color: var(--text3); }
+
+  /* CHEATSHEET */
+  .search-bar {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 14px; color: var(--text);
+    font-family: var(--font-mono); font-size: 13px; margin-bottom: 1rem;
+    transition: border-color 0.15s;
+  }
+  .search-bar:focus { outline: none; border-color: var(--green); }
+  .cheat-table { width: 100%; border-collapse: collapse; }
+  .cheat-table th {
+    text-align: left; font-size: 11px; color: var(--text3); font-family: var(--font-mono);
+    text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cheat-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .cheat-table tr:hover td { background: var(--bg2); }
+  .cheat-cmd { font-family: var(--font-mono); font-size: 12px; color: var(--cyan); cursor: pointer; }
+  .cheat-desc { font-size: 13px; color: var(--text2); }
+  .cheat-cat {
+    font-size: 10px; font-family: var(--font-mono); padding: 2px 6px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .cat-gha { background: var(--blue-dim); color: var(--blue); border: 1px solid #1e4580; }
+  .cat-argo { background: var(--purple-dim); color: var(--purple); border: 1px solid #5a3b8a; }
+  .cat-git { background: var(--amber-dim); color: var(--amber); border: 1px solid #5c4010; }
+  .cat-docker { background: var(--cyan-dim); color: var(--cyan); border: 1px solid #0d5a5e; }
+  .cat-helm { background: var(--green-dim); color: var(--green-bright); border: 1px solid var(--green); }
+  .copy-flash { position: fixed; bottom: 20px; right: 20px; background: var(--green); color: #000; font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 6px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+  .copy-flash.show { opacity: 1; }
+
+  /* QUIZ */
+  .quiz-wrap { max-width: 640px; }
+  .quiz-score {
+    font-family: var(--font-mono); font-size: 13px; color: var(--text2);
+    margin-bottom: 1rem;
+  }
+  .quiz-progress { height: 3px; background: var(--bg3); border-radius: 2px; margin-bottom: 1.5rem; }
+  .quiz-progress-bar { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.4s; }
+  .quiz-q { font-size: 15px; color: var(--text); font-weight: 500; margin-bottom: 1.25rem; line-height: 1.6; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+  .quiz-opt {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; cursor: pointer;
+    font-size: 13px; color: var(--text2); transition: all 0.15s; text-align: left;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--border2); color: var(--text); background: var(--bg3); }
+  .quiz-opt.correct { background: var(--green-dim); border-color: var(--green); color: var(--green-bright); }
+  .quiz-opt.wrong { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .quiz-explanation {
+    background: var(--bg2); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0;
+    padding: 10px 14px; font-size: 13px; color: var(--text2); display: none; margin-bottom: 1rem; line-height: 1.6;
+  }
+  .quiz-explanation.visible { display: block; }
+  .quiz-explanation code { font-family: var(--font-mono); font-size: 11px; background: var(--bg3); padding: 1px 5px; border-radius: 3px; color: var(--cyan); }
+  .quiz-nav { display: flex; gap: 10px; align-items: center; }
+  .quiz-end {
+    text-align: center; padding: 2rem; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; display: none;
+  }
+  .quiz-end.visible { display: block; }
+  .quiz-end .big-score { font-size: 3rem; font-weight: 700; font-family: var(--font-mono); color: var(--green); }
+  .quiz-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+
+  /* ERROR ENCYCLOPEDIA */
+  .error-search { margin-bottom: 1rem; }
+  .error-list { display: flex; flex-direction: column; gap: 8px; }
+  .error-item {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .error-head {
+    padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    transition: background 0.15s;
+  }
+  .error-head:hover { background: var(--bg3); }
+  .error-badge {
+    font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+  }
+  .sev-critical { background: var(--red-dim); color: var(--red); border: 1px solid #7a1f1f; }
+  .sev-warning { background: var(--amber-dim); color: var(--amber); border: 1px solid #5c4010; }
+  .sev-info { background: var(--blue-dim); color: var(--blue); border: 1px solid #1e4580; }
+  .error-name { font-family: var(--font-mono); font-size: 13px; color: var(--text); flex: 1; }
+  .error-cat { font-size: 11px; color: var(--text3); }
+  .error-body { padding: 0 14px 12px; display: none; border-top: 1px solid var(--border); }
+  .error-item[data-open="true"] .error-body { display: block; }
+  .error-section { margin-top: 10px; }
+  .error-section h4 { font-size: 11px; color: var(--text3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+  .error-section pre { font-family: var(--font-mono); font-size: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; color: var(--text2); overflow-x: auto; white-space: pre-wrap; line-height: 1.7; }
+  .error-section pre .fix { color: var(--green); }
+  .error-section pre .err { color: var(--red); }
+
+  /* SNIPPETS */
+  .snippet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .snippet-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .snippet-head { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .snippet-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+  .copy-btn {
+    font-size: 11px; font-family: var(--font-mono); padding: 3px 10px;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text3); cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { border-color: var(--green); color: var(--green); }
+  .snippet-code { padding: 10px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text2); overflow-x: auto; white-space: pre; line-height: 1.7; max-height: 180px; overflow-y: auto; }
+  .snippet-code .key { color: var(--blue); }
+  .snippet-code .val { color: var(--green); }
+  .snippet-code .comment { color: var(--text3); }
+  .snippet-code .str { color: var(--amber); }
+
+  /* PIPELINE VISUALIZER */
+  .pipeline-vis { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .pv-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .pv-header h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+  .pv-body { padding: 1.5rem; overflow-x: auto; }
+  .pipeline-stages { display: flex; align-items: stretch; gap: 0; min-width: 600px; }
+  .pipe-stage {
+    flex: 1; display: flex; flex-direction: column; gap: 8px;
+    padding: 0 8px; position: relative;
+  }
+  .pipe-stage + .pipe-stage::before {
+    content: ''; position: absolute; left: -1px; top: 20px; bottom: 20px;
+    width: 0; border-left: 2px dashed var(--border2);
+  }
+  .pipe-stage-title { font-size: 11px; font-family: var(--font-mono); color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; text-align: center; margin-bottom: 4px; }
+  .pipe-job {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; color: var(--text2); text-align: center;
+    position: relative;
+  }
+  .pipe-job.success { border-color: var(--green); color: var(--green-bright); background: var(--green-dim); }
+  .pipe-job.pending { border-color: var(--border2); color: var(--text3); }
+  .pipe-job.running { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+  .pipe-job.failure { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+  .pipe-job-icon { font-size: 14px; display: block; margin-bottom: 4px; }
+  .pipe-connector { display: flex; align-items: center; justify-content: center; padding-top: 24px; }
+  .pipe-connector svg { color: var(--text3); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border); padding: 1.5rem;
+    max-width: 900px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  footer p { font-size: 12px; color: var(--text3); }
+  .footer-links { display: flex; gap: 12px; }
+  .footer-links a { font-size: 12px; color: var(--text3); text-decoration: none; }
+  .footer-links a:hover { color: var(--text2); }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+    section { padding: 1.5rem 1rem; }
+    .stats { padding: 1rem; }
+    footer { padding: 1rem; }
+  }
+
+  /* PIPELINE VIS INTERACTIVE */
+  .vis-select-wrap { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .vis-select-wrap select { flex: 1; min-width: 160px; }
+  .run-btn {
+    background: var(--green); color: #000; border: none; border-radius: 6px;
+    padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+  }
+  .run-btn:hover { opacity: 0.85; }
+  .vis-legend { display: flex; gap: 12px; margin-top: 1rem; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">⚡ <span>//</span> CICDLab</a>
+  <div class="nav-links">
+    <a href="#modules">Modules</a>
+    <a href="#tools">Tools</a>
+    <a href="#visualizer">Visualizer</a>
+    <a href="#cheatsheet">Cheatsheet</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#snippets">Snippets</a>
+    <a href="#errors">Errors</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-ext"><a href="https://eknathalabs.com">↗ eknathalabs.com</a></span>
+    <button id="theme-btn">☀</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:900px;margin:0 auto">
+<div class="hero">
+  <div class="hero-tag">// cicd.eknathalabs.com · free · no signup required</div>
+  <h1>Master <em>CI/CD & GitOps.</em><br>Ship with Confidence.</h1>
+  <p>Structured CI/CD learning — GitHub Actions, ArgoCD, pipeline patterns. 8 offline tools, 100-question quiz, visual pipeline builder, cheatsheet & error encyclopedia. Built by a Platform Engineer.</p>
+  <div class="hero-btns">
+    <a href="#modules" class="btn-primary">▶ Start Learning</a>
+    <a href="#visualizer" class="btn-ghost">⚡ Pipeline Visualizer</a>
+    <a href="#cheatsheet" class="btn-ghost">⌘ Cheatsheet</a>
+    <a href="#quiz" class="btn-ghost">✦ Take Quiz</a>
+  </div>
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="term-dots"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div></div>
+      <div class="term-title">cicdlab ~ github actions + argocd</div>
+    </div>
+    <div class="term-body">
+<span class="term-comment"># GitHub Actions job fails — diagnosing</span>
+<span class="term-prompt">eknatha@cicdlab $ </span><span class="term-cmd">gh run view 7283910 --log-failed</span>
+<span class="term-out">Run docker build -t myapp:${{ github.sha }} .</span>
+<span class="term-err">Error: failed to solve: failed to read dockerfile: open Dockerfile: no such file</span>
+
+<span class="term-prompt">eknatha@cicdlab $ </span><span class="term-cmd">ls -la | grep -i docker</span>
+<span class="term-out">-rw-r--r-- 1 eknatha staff 412 dockerfile</span>
+<span class="term-comment"># Case mismatch — Linux is case-sensitive</span>
+<span class="term-prompt">eknatha@cicdlab $ </span><span class="term-cmd">mv dockerfile Dockerfile && git add . && git push</span>
+<span class="term-ok">✓ Run #7283911 · All jobs passed · Duration 2m 14s</span>
+<span class="term-ok">✓ ArgoCD sync triggered · myapp deployed to production</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">8</div><div class="stat-label">Modules</div></div>
+  <div class="stat"><div class="stat-num">8</div><div class="stat-label">Offline Tools</div></div>
+  <div class="stat"><div class="stat-num">120+</div><div class="stat-label">Commands</div></div>
+  <div class="stat"><div class="stat-num">100</div><div class="stat-label">Quiz Q&A</div></div>
+  <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Snippets</div></div>
+  <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Error Codes</div></div>
+  <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Always</div></div>
+</div>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="section-head">
+    <div class="section-meta">// Learning Path</div>
+    <h2>Structured Modules</h2>
+    <p>8 modules from pipeline fundamentals to GitOps security. Click any module to deep dive.</p>
+  </div>
+  <div class="filter-tabs" id="mod-filter">
+    <button class="ftab active" data-filter="all">All</button>
+    <button class="ftab" data-filter="beginner">Beginner</button>
+    <button class="ftab" data-filter="intermediate">Intermediate</button>
+    <button class="ftab" data-filter="advanced">Advanced</button>
+    <button class="ftab" data-filter="argocd">ArgoCD</button>
+    <button class="ftab" data-filter="gha">GitHub Actions</button>
+  </div>
+  <div class="module-grid" id="modules-grid">
+
+    <div class="module-card" data-level="beginner" data-cat="gha" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">⚡</div>
+        <div class="module-info">
+          <div class="module-level level-beginner">Beginner</div>
+          <div class="module-name">GitHub Actions Foundations</div>
+          <div class="module-desc">Triggers, jobs, steps, runners, contexts, expressions, env vars.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">triggers</span><span class="mtag">jobs</span><span class="mtag">runners</span><span class="mtag">contexts</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>Workflow anatomy: <code>on:</code>, <code>jobs:</code>, <code>steps:</code> — how they nest</li>
+          <li>Event triggers: <code>push</code>, <code>pull_request</code>, <code>schedule</code>, <code>workflow_dispatch</code></li>
+          <li>GitHub-hosted vs self-hosted runners and runner labels</li>
+          <li>Contexts: <code>github</code>, <code>env</code>, <code>secrets</code>, <code>steps</code>, <code>runner</code></li>
+          <li>Expressions: <code>${{ }}</code> syntax, operators, functions like <code>contains()</code>, <code>startsWith()</code></li>
+          <li>Environment variables: <code>env:</code> at workflow, job, and step scope</li>
+          <li>Job dependencies with <code>needs:</code> and conditional <code>if:</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="beginner" data-cat="gha" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">🔐</div>
+        <div class="module-info">
+          <div class="module-level level-beginner">Beginner</div>
+          <div class="module-name">Secrets & Environments</div>
+          <div class="module-desc">Secrets management, environment protection rules, OIDC auth to cloud providers.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">secrets</span><span class="mtag">OIDC</span><span class="mtag">environments</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>Repository, organization, and environment secrets — scope and precedence</li>
+          <li>OIDC authentication to AWS, GCP, Azure — no long-lived credentials</li>
+          <li>Environment protection rules: required reviewers, wait timers, branch filters</li>
+          <li>Using <code>${{ secrets.MY_SECRET }}</code> safely — masking in logs</li>
+          <li>Secret scanning and push protection in GitHub Advanced Security</li>
+          <li>Avoid <code>echo $SECRET</code> anti-pattern — use <code>--password-stdin</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="intermediate" data-cat="gha" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">♻</div>
+        <div class="module-info">
+          <div class="module-level level-intermediate">Intermediate</div>
+          <div class="module-name">Reusable Workflows & Actions</div>
+          <div class="module-desc">Composite actions, workflow_call, action.yml, sharing across repos.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">workflow_call</span><span class="mtag">composite</span><span class="mtag">actions</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>Composite actions vs reusable workflows — when to use each</li>
+          <li><code>workflow_call</code> trigger: inputs, outputs, secrets inheritance</li>
+          <li>Creating a custom action with <code>action.yml</code>: <code>runs.using: composite</code></li>
+          <li>Calling reusable workflows with <code>uses: org/repo/.github/workflows/ci.yml@main</code></li>
+          <li>Matrix strategy: <code>strategy.matrix</code> for multi-OS, multi-version testing</li>
+          <li>Caching dependencies: <code>actions/cache</code> with restore/save keys</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="intermediate" data-cat="gha" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">🏃</div>
+        <div class="module-info">
+          <div class="module-level level-intermediate">Intermediate</div>
+          <div class="module-name">Self-hosted Runners</div>
+          <div class="module-desc">Runner setup, security hardening, ephemeral runners, runner groups.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">runners</span><span class="mtag">security</span><span class="mtag">ephemeral</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>When to self-host: private network access, GPU workloads, cost at scale</li>
+          <li>Runner registration: <code>config.sh</code> + <code>run.sh</code>, systemd service setup</li>
+          <li>Ephemeral runners with <code>--ephemeral</code> flag — fresh environment every job</li>
+          <li>Runner groups: restrict to specific repos or orgs</li>
+          <li>Security: never run untrusted PRs on self-hosted runners</li>
+          <li>Kubernetes-based runners with Actions Runner Controller (ARC)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="intermediate" data-cat="argocd" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">🐙</div>
+        <div class="module-info">
+          <div class="module-level level-intermediate">Intermediate</div>
+          <div class="module-name">ArgoCD Core Concepts</div>
+          <div class="module-desc">Applications, sync policies, health checks, resource hooks, App of Apps.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">Application</span><span class="mtag">sync</span><span class="mtag">health</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>ArgoCD Application CRD: <code>source</code>, <code>destination</code>, <code>syncPolicy</code></li>
+          <li>Sync phases: PreSync → Sync → PostSync hooks with <code>argocd.argoproj.io/hook</code></li>
+          <li>Health checks: Healthy, Progressing, Degraded, Missing, Suspended</li>
+          <li>App of Apps pattern for managing multiple applications</li>
+          <li>ApplicationSet: generate apps from git directories, clusters, or lists</li>
+          <li>Sync waves with <code>argocd.argoproj.io/sync-wave</code> annotation</li>
+          <li>Rollback: <code>argocd app rollback myapp &lt;revision&gt;</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="intermediate" data-cat="argocd" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">🌿</div>
+        <div class="module-info">
+          <div class="module-level level-intermediate">Intermediate</div>
+          <div class="module-name">GitOps Patterns</div>
+          <div class="module-desc">Push vs pull model, image updater, multi-env promotion, branching strategies.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">GitOps</span><span class="mtag">promotion</span><span class="mtag">image-updater</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>Push-based (CI deploys) vs pull-based (ArgoCD pulls) — tradeoffs</li>
+          <li>Separate app repo and config repo — why and how</li>
+          <li>ArgoCD Image Updater: auto-update image tags in Git on new registry push</li>
+          <li>Multi-environment promotion: dev → staging → prod via PR or branch</li>
+          <li>Environment branching vs directory-per-env vs Kustomize overlays</li>
+          <li>Secrets in GitOps: Sealed Secrets, External Secrets Operator, SOPS</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="advanced" data-cat="gha" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">📦</div>
+        <div class="module-info">
+          <div class="module-level level-advanced">Advanced</div>
+          <div class="module-name">Pipeline Deployment Patterns</div>
+          <div class="module-desc">Blue-green, canary, rolling updates, rollback strategies in CI/CD pipelines.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">blue-green</span><span class="mtag">canary</span><span class="mtag">rollback</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>Blue-green with ArgoCD: two Deployments, switch Service selector</li>
+          <li>Canary with Argo Rollouts: <code>steps</code>, <code>pause</code>, traffic weights</li>
+          <li>Rolling update defaults vs <code>maxSurge</code>/<code>maxUnavailable</code> tuning</li>
+          <li>Automated rollback on metric failure with Argo Rollouts + Prometheus</li>
+          <li>Feature flags as an alternative to branching deployments</li>
+          <li>Gate checks between environments: integration tests, smoke tests</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="module-card" data-level="advanced" data-cat="argocd" onclick="toggleModule(this)">
+      <div class="module-header">
+        <div class="module-icon">🔒</div>
+        <div class="module-info">
+          <div class="module-level level-advanced">Advanced</div>
+          <div class="module-name">Security & Supply Chain</div>
+          <div class="module-desc">SLSA, Sigstore/cosign, SBOM, dependency scanning, workflow hardening.</div>
+        </div>
+      </div>
+      <div class="module-tags"><span class="mtag">SLSA</span><span class="mtag">cosign</span><span class="mtag">SBOM</span></div>
+      <div class="module-body">
+        <h4>Key Concepts</h4>
+        <ul>
+          <li>SLSA levels: provenance, build integrity, hermetic builds</li>
+          <li>Sign container images with <code>cosign sign</code> using keyless OIDC</li>
+          <li>Generate SBOM with <code>syft</code>, attach with <code>cosign attach sbom</code></li>
+          <li>Verify signatures in ArgoCD before sync with admission webhooks</li>
+          <li>Workflow hardening: pin actions to SHA, <code>permissions:</code> block, <code>GITHUB_TOKEN</code> minimal scope</li>
+          <li>Dependency scanning: Dependabot, <code>trivy</code> in CI, <code>grype</code> for SBOMs</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="section-head">
+    <div class="section-meta">// Offline Interactive Tools</div>
+    <h2>Built-in CI/CD Tools</h2>
+    <p>8 fully offline tools — no API, no internet required. Works anywhere.</p>
+  </div>
+  <div class="tools-grid">
+
+    <!-- TOOL 1: Workflow Generator -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">⚙</div>
+        <div>
+          <div class="tool-name">Workflow Generator</div>
+        </div>
+        <div class="tool-type">GENERATOR</div>
+      </div>
+      <div class="tool-body">
+        <label>Language / Stack</label>
+        <select id="wf-lang">
+          <option value="node">Node.js</option>
+          <option value="python">Python</option>
+          <option value="go">Go</option>
+          <option value="java">Java (Maven)</option>
+          <option value="docker">Docker image build</option>
+          <option value="helm">Helm chart deploy</option>
+        </select>
+        <label style="margin-top:8px">Trigger</label>
+        <select id="wf-trigger">
+          <option value="push">Push to main</option>
+          <option value="pr">Pull Request</option>
+          <option value="both">Push + PR</option>
+          <option value="manual">Manual (workflow_dispatch)</option>
+        </select>
+        <label style="margin-top:8px">Include</label>
+        <select id="wf-extra">
+          <option value="basic">Lint + Test only</option>
+          <option value="docker">+ Docker build & push</option>
+          <option value="argocd">+ Docker + ArgoCD deploy</option>
+        </select>
+        <button class="tool-run" onclick="generateWorkflow()">⚙ Generate Workflow</button>
+        <div class="tool-output" id="wf-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 2: Cron Expression Builder -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🕐</div>
+        <div><div class="tool-name">Schedule Expression Builder</div></div>
+        <div class="tool-type">BUILDER</div>
+      </div>
+      <div class="tool-body">
+        <label>Minute (0-59, * = every)</label>
+        <input type="text" id="cron-min" value="0" placeholder="0">
+        <label style="margin-top:8px">Hour (0-23)</label>
+        <input type="text" id="cron-hr" value="2" placeholder="2">
+        <label style="margin-top:8px">Day of Month (1-31)</label>
+        <input type="text" id="cron-dom" value="*" placeholder="*">
+        <label style="margin-top:8px">Month (1-12)</label>
+        <input type="text" id="cron-mon" value="*" placeholder="*">
+        <label style="margin-top:8px">Day of Week (0-6, Sun=0)</label>
+        <input type="text" id="cron-dow" value="*" placeholder="*">
+        <button class="tool-run" onclick="buildCron()">🕐 Build Schedule</button>
+        <div class="tool-output" id="cron-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 3: ArgoCD App Manifest -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🐙</div>
+        <div><div class="tool-name">ArgoCD App Generator</div></div>
+        <div class="tool-type">GENERATOR</div>
+      </div>
+      <div class="tool-body">
+        <label>App Name</label>
+        <input type="text" id="argo-name" value="myapp" placeholder="myapp">
+        <label style="margin-top:8px">Git Repo URL</label>
+        <input type="text" id="argo-repo" value="https://github.com/org/app-config" placeholder="https://github.com/org/repo">
+        <label style="margin-top:8px">Path in Repo</label>
+        <input type="text" id="argo-path" value="k8s/overlays/production" placeholder="k8s/production">
+        <label style="margin-top:8px">Destination Namespace</label>
+        <input type="text" id="argo-ns" value="production" placeholder="production">
+        <label style="margin-top:8px">Sync Policy</label>
+        <select id="argo-sync">
+          <option value="auto">Automated (auto-sync + prune)</option>
+          <option value="manual">Manual sync only</option>
+          <option value="selfheal">Auto + self-heal</option>
+        </select>
+        <button class="tool-run" onclick="generateArgoApp()">🐙 Generate Manifest</button>
+        <div class="tool-output" id="argo-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 4: Dockerfile + Build Workflow -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🔍</div>
+        <div><div class="tool-name">Workflow Linter</div></div>
+        <div class="tool-type">LINTER</div>
+      </div>
+      <div class="tool-body">
+        <label>Paste GitHub Actions YAML</label>
+        <textarea id="lint-in" rows="6" placeholder="on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: npm test"></textarea>
+        <button class="tool-run" onclick="lintWorkflow()">🔍 Lint Workflow</button>
+        <div class="tool-output" id="lint-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 5: Secret Reference Checker -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🔒</div>
+        <div><div class="tool-name">Secret Pattern Scanner</div></div>
+        <div class="tool-type">SECURITY</div>
+      </div>
+      <div class="tool-body">
+        <label>Paste workflow YAML or script</label>
+        <textarea id="sec-in" rows="6" placeholder="Paste your workflow or shell script..."></textarea>
+        <button class="tool-run" onclick="scanSecrets()">🔒 Scan for Issues</button>
+        <div class="tool-output" id="sec-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 6: OIDC Auth Snippet -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">🌐</div>
+        <div><div class="tool-name">OIDC Auth Snippet Builder</div></div>
+        <div class="tool-type">GENERATOR</div>
+      </div>
+      <div class="tool-body">
+        <label>Cloud Provider</label>
+        <select id="oidc-provider">
+          <option value="aws">AWS</option>
+          <option value="gcp">GCP</option>
+          <option value="azure">Azure</option>
+        </select>
+        <label style="margin-top:8px">AWS Role ARN / GCP WI Pool / Azure Client ID</label>
+        <input type="text" id="oidc-id" value="arn:aws:iam::123456789:role/github-actions" placeholder="Role / Pool ID">
+        <label style="margin-top:8px">AWS Region (AWS only)</label>
+        <input type="text" id="oidc-region" value="us-east-1" placeholder="us-east-1">
+        <button class="tool-run" onclick="buildOIDC()">🌐 Generate OIDC Step</button>
+        <div class="tool-output" id="oidc-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 7: Matrix Strategy Builder -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">📦</div>
+        <div><div class="tool-name">Matrix Strategy Builder</div></div>
+        <div class="tool-type">BUILDER</div>
+      </div>
+      <div class="tool-body">
+        <label>OS (comma-separated)</label>
+        <input type="text" id="mat-os" value="ubuntu-latest, macos-latest, windows-latest" placeholder="ubuntu-latest, macos-latest">
+        <label style="margin-top:8px">Versions (comma-separated)</label>
+        <input type="text" id="mat-ver" value="18, 20, 22" placeholder="18, 20">
+        <label style="margin-top:8px">Include Exclude rule (optional)</label>
+        <input type="text" id="mat-excl" value="windows-latest + 18" placeholder="os + version to exclude">
+        <button class="tool-run" onclick="buildMatrix()">📦 Generate Matrix</button>
+        <div class="tool-output" id="mat-out"></div>
+      </div>
+    </div>
+
+    <!-- TOOL 8: Rollback Command Generator -->
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">↩</div>
+        <div><div class="tool-name">Rollback Command Builder</div></div>
+        <div class="tool-type">REFERENCE</div>
+      </div>
+      <div class="tool-body">
+        <label>Deployment method</label>
+        <select id="rb-method">
+          <option value="argocd">ArgoCD</option>
+          <option value="helm">Helm</option>
+          <option value="kubectl">kubectl (Deployment)</option>
+          <option value="gha">Re-run GH Actions job</option>
+        </select>
+        <label style="margin-top:8px">App / Release / Deployment Name</label>
+        <input type="text" id="rb-name" value="myapp" placeholder="myapp">
+        <label style="margin-top:8px">Namespace (k8s) / Revision</label>
+        <input type="text" id="rb-ns" value="production" placeholder="production">
+        <button class="tool-run" onclick="buildRollback()">↩ Generate Rollback Commands</button>
+        <div class="tool-output" id="rb-out"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PIPELINE VISUALIZER -->
+<section id="visualizer">
+  <div class="section-head">
+    <div class="section-meta">// Interactive</div>
+    <h2>Pipeline Visualizer</h2>
+    <p>Visualize a GitHub Actions pipeline with job dependencies, stages, and status.</p>
+  </div>
+  <div class="pipeline-vis">
+    <div class="pv-header">
+      <h3>⚡ Pipeline Run View</h3>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <select id="vis-template" style="font-size:12px;padding:4px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);">
+          <option value="nodejs">Node.js CI + Docker + ArgoCD</option>
+          <option value="python">Python + Test + ECR</option>
+          <option value="helm">Helm Chart Release</option>
+          <option value="multi">Multi-env Promotion</option>
+        </select>
+        <button class="run-btn" onclick="renderVisualizer()">▶ Run</button>
+      </div>
+    </div>
+    <div class="pv-body">
+      <div id="vis-stages" class="pipeline-stages"></div>
+      <div class="vis-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div> Success</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Running</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div> Failed</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--border2)"></div> Pending</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHEATSHEET -->
+<section id="cheatsheet">
+  <div class="section-head">
+    <div class="section-meta">// Quick Reference</div>
+    <h2>CI/CD Cheatsheet</h2>
+    <p>120+ commands — searchable, click any row to copy to clipboard.</p>
+  </div>
+  <div class="filter-tabs" id="cheat-filter">
+    <button class="ftab active" data-filter="all">All</button>
+    <button class="ftab" data-filter="gha">GitHub Actions</button>
+    <button class="ftab" data-filter="argo">ArgoCD</button>
+    <button class="ftab" data-filter="git">Git</button>
+    <button class="ftab" data-filter="docker">Docker</button>
+    <button class="ftab" data-filter="helm">Helm</button>
+  </div>
+  <input class="search-bar" id="cheat-search" placeholder="Search commands..." oninput="filterCheat()">
+  <table class="cheat-table" id="cheat-table">
+    <thead><tr><th>Command</th><th>Description</th><th>Category</th></tr></thead>
+    <tbody id="cheat-body"></tbody>
+  </table>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="section-head">
+    <div class="section-meta">// Practice Questions</div>
+    <h2>CI/CD & GitOps Quiz — 100 Questions</h2>
+    <p>Scenario-based questions mapped to Platform Engineer interview domains.</p>
+  </div>
+  <div class="quiz-wrap">
+    <div class="quiz-filter" id="quiz-filter">
+      <button class="ftab active" data-qfilter="all">All Topics</button>
+      <button class="ftab" data-qfilter="gha">GitHub Actions</button>
+      <button class="ftab" data-qfilter="argocd">ArgoCD</button>
+      <button class="ftab" data-qfilter="gitops">GitOps</button>
+      <button class="ftab" data-qfilter="security">Security</button>
+    </div>
+    <div class="quiz-score" id="quiz-score">Score: 0 / 0</div>
+    <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-bar" style="width:0%"></div></div>
+    <div id="quiz-container">
+      <div class="quiz-q" id="quiz-q"></div>
+      <div class="quiz-options" id="quiz-opts"></div>
+      <div class="quiz-explanation" id="quiz-exp"></div>
+      <div class="quiz-nav">
+        <button class="btn-ghost" onclick="skipQuestion()">Skip →</button>
+        <button class="btn-primary" id="quiz-next" onclick="nextQuestion()" style="display:none">Next →</button>
+      </div>
+    </div>
+    <div class="quiz-end" id="quiz-end">
+      <div class="big-score" id="final-score">0/0</div>
+      <p style="color:var(--text2);margin-top:8px;font-size:14px">Quiz complete!</p>
+      <button class="btn-primary" style="margin-top:1rem" onclick="restartQuiz()">↺ Restart Quiz</button>
+    </div>
+  </div>
+</section>
+
+<!-- SNIPPETS -->
+<section id="snippets">
+  <div class="section-head">
+    <div class="section-meta">// Copy-Paste Library</div>
+    <h2>Snippet Library</h2>
+    <p>40+ production-ready GitHub Actions workflows and ArgoCD manifests.</p>
+  </div>
+  <div class="filter-tabs" id="snip-filter">
+    <button class="ftab active" data-filter="all">All</button>
+    <button class="ftab" data-filter="gha">GitHub Actions</button>
+    <button class="ftab" data-filter="argocd">ArgoCD</button>
+    <button class="ftab" data-filter="security">Security</button>
+    <button class="ftab" data-filter="helm">Helm</button>
+  </div>
+  <div class="snippet-grid" id="snippet-grid"></div>
+</section>
+
+<!-- ERROR ENCYCLOPEDIA -->
+<section id="errors">
+  <div class="section-head">
+    <div class="section-meta">// Error Encyclopedia</div>
+    <h2>CI/CD Error Reference</h2>
+    <p>50+ pipeline errors — root cause, exact fix commands, and prevention tips.</p>
+  </div>
+  <div class="filter-tabs" id="err-filter">
+    <button class="ftab active" data-filter="all">All</button>
+    <button class="ftab" data-filter="gha">GitHub Actions</button>
+    <button class="ftab" data-filter="argocd">ArgoCD</button>
+    <button class="ftab" data-filter="docker">Docker</button>
+    <button class="ftab" data-filter="git">Git</button>
+  </div>
+  <input class="search-bar" id="err-search" placeholder="Search errors..." oninput="filterErrors()">
+  <div class="error-list" id="error-list"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>cicd.eknathalabs.com · Built by <a href="https://eknathalabs.com" style="color:var(--text2)">Eknatha Reddy</a> · Free forever · No ads · No signup</p>
+  <div class="footer-links">
+    <a href="https://eknathalabs.com">eknathalabs.com</a>
+    <a href="https://kubelab.eknathalabs.com">KubeLab</a>
+    <a href="https://terraform.eknathalabs.com">Terraform</a>
+    <a href="https://linux.eknathalabs.com">LinuxLab</a>
+    <a href="https://docker.eknathalabs.com">DockerLab</a>
+    <a href="https://github.com/eknathareddyp">GitHub</a>
+  </div>
+</footer>
+
+<div class="copy-flash" id="copy-flash">Copied!</div>
+
+<script>
+// ─── THEME ───────────────────────────────────────────────────────────────────
+const themeBtn = document.getElementById('theme-btn');
+let isDark = true;
+themeBtn.addEventListener('click', () => {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'light');
+  themeBtn.textContent = isDark ? '☀' : '🌙';
+});
+
+// ─── MODULE TOGGLE ───────────────────────────────────────────────────────────
+function toggleModule(el) {
+  const isOpen = el.getAttribute('data-open') === 'true';
+  document.querySelectorAll('.module-card').forEach(c => c.setAttribute('data-open','false'));
+  el.setAttribute('data-open', isOpen ? 'false' : 'true');
+}
+document.getElementById('mod-filter').addEventListener('click', e => {
+  if (!e.target.classList.contains('ftab')) return;
+  document.querySelectorAll('#mod-filter .ftab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  const f = e.target.dataset.filter;
+  document.querySelectorAll('.module-card').forEach(c => {
+    c.style.display = (f==='all' || c.dataset.level===f || c.dataset.cat===f) ? '' : 'none';
+  });
+});
+
+// ─── COPY FLASH ──────────────────────────────────────────────────────────────
+function showCopy() {
+  const el = document.getElementById('copy-flash');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1500);
+}
+function copyText(text) { navigator.clipboard.writeText(text).then(showCopy); }
+
+// ─── TOOL 1: WORKFLOW GENERATOR ──────────────────────────────────────────────
+function generateWorkflow() {
+  const lang = document.getElementById('wf-lang').value;
+  const trigger = document.getElementById('wf-trigger').value;
+  const extra = document.getElementById('wf-extra').value;
+  const out = document.getElementById('wf-out');
+
+  const triggerMap = {
+    push: `on:\n  push:\n    branches: [main]`,
+    pr: `on:\n  pull_request:\n    branches: [main]`,
+    both: `on:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]`,
+    manual: `on:\n  workflow_dispatch:\n    inputs:\n      environment:\n        description: 'Target environment'\n        required: true\n        default: staging`
+  };
+  const setupMap = {
+    node: `      - name: Setup Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '20'\n          cache: 'npm'\n      - run: npm ci\n      - run: npm run lint\n      - run: npm test`,
+    python: `      - name: Setup Python\n        uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n      - run: pip install -r requirements.txt\n      - run: flake8 .\n      - run: pytest --cov`,
+    go: `      - name: Setup Go\n        uses: actions/setup-go@v5\n        with:\n          go-version: '1.22'\n      - run: go vet ./...\n      - run: go test ./... -race -coverprofile=coverage.out`,
+    java: `      - name: Setup Java\n        uses: actions/setup-java@v4\n        with:\n          java-version: '21'\n          distribution: 'temurin'\n      - run: mvn --batch-mode verify`,
+    docker: `      - name: Set up Docker Buildx\n        uses: docker/setup-buildx-action@v3`,
+    helm: `      - name: Setup Helm\n        uses: azure/setup-helm@v4\n        with:\n          version: v3.14.0\n      - run: helm lint ./charts/myapp\n      - run: helm template ./charts/myapp | kubectl --dry-run=client apply -f -`
+  };
+  const dockerSteps = `\n      - name: Log in to registry\n        uses: docker/login-action@v3\n        with:\n          registry: ghcr.io\n          username: \${{ github.actor }}\n          password: \${{ secrets.GITHUB_TOKEN }}\n      - name: Build and push\n        uses: docker/build-push-action@v5\n        with:\n          push: true\n          tags: ghcr.io/\${{ github.repository }}:\${{ github.sha }}\n          cache-from: type=gha\n          cache-to: type=gha,mode=max`;
+  const argoSteps = `\n\n  deploy:\n    needs: build\n    runs-on: ubuntu-latest\n    environment: production\n    steps:\n      - uses: actions/checkout@v4\n      - name: Update image tag in config repo\n        run: |\n          git config user.email "ci@github.com"\n          git config user.name "GitHub Actions"\n          sed -i "s|tag: .*|tag: \${{ github.sha }}|" k8s/values.yaml\n          git add k8s/values.yaml\n          git commit -m "ci: deploy \${{ github.sha }}"\n          git push\n      - name: Wait for ArgoCD sync\n        run: |\n          argocd app wait myapp --sync --timeout 120\n        env:\n          ARGOCD_SERVER: \${{ secrets.ARGOCD_SERVER }}\n          ARGOCD_AUTH_TOKEN: \${{ secrets.ARGOCD_AUTH_TOKEN }}`;
+
+  let yaml = `name: CI${extra==='argocd'?' / CD':''}\n\n${triggerMap[trigger]}\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      packages: write\n    steps:\n      - uses: actions/checkout@v4\n${setupMap[lang] || setupMap['node']}`;
+  if (extra === 'docker' || extra === 'argocd') yaml += dockerSteps;
+  if (extra === 'argocd') yaml += argoSteps;
+
+  out.innerHTML = `<span class="comment"># Generated workflow — save as .github/workflows/ci.yml</span>\n${yaml}`;
+  out.classList.add('visible');
+  out.onclick = () => copyText(yaml);
+}
+
+// ─── TOOL 2: CRON BUILDER ────────────────────────────────────────────────────
+function buildCron() {
+  const min = document.getElementById('cron-min').value || '0';
+  const hr = document.getElementById('cron-hr').value || '*';
+  const dom = document.getElementById('cron-dom').value || '*';
+  const mon = document.getElementById('cron-mon').value || '*';
+  const dow = document.getElementById('cron-dow').value || '*';
+  const expr = `${min} ${hr} ${dom} ${mon} ${dow}`;
+  const out = document.getElementById('cron-out');
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let desc = 'Runs ';
+  if (hr === '*') desc += 'every hour ';
+  else desc += `at ${hr.padStart(2,'0')}:${min.padStart(2,'0')} UTC `;
+  if (dow !== '*') desc += `on ${days[parseInt(dow)] || 'day '+dow} `;
+  if (dom !== '*') desc += `on day ${dom} of the month `;
+  if (mon !== '*') desc += `in ${months[parseInt(mon)-1] || 'month '+mon}`;
+  out.innerHTML = `<span class="ok"># Cron expression</span>\n${expr}\n\n<span class="ok"># In plain English</span>\n${desc}\n\n<span class="ok"># GitHub Actions schedule</span>\non:\n  schedule:\n    - cron: '${expr}'\n\n<span class="comment"># Note: GitHub Actions runs on UTC. Min interval is 5 minutes.</span>`;
+  out.classList.add('visible');
+  out.onclick = () => copyText(`on:\n  schedule:\n    - cron: '${expr}'`);
+}
+
+// ─── TOOL 3: ARGOCD APP ──────────────────────────────────────────────────────
+function generateArgoApp() {
+  const name = document.getElementById('argo-name').value || 'myapp';
+  const repo = document.getElementById('argo-repo').value;
+  const path = document.getElementById('argo-path').value;
+  const ns = document.getElementById('argo-ns').value || 'default';
+  const sync = document.getElementById('argo-sync').value;
+  const autoSync = sync !== 'manual';
+  const selfHeal = sync === 'selfheal';
+  const manifest = `apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${name}
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: ${name}
+    managed-by: argocd
+spec:
+  project: default
+  source:
+    repoURL: ${repo}
+    targetRevision: HEAD
+    path: ${path}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${ns}
+  syncPolicy:${autoSync ? `
+    automated:
+      prune: true
+      selfHeal: ${selfHeal}` : `
+    # Manual sync — run: argocd app sync ${name}`}
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+  revisionHistoryLimit: 5`;
+  const out = document.getElementById('argo-out');
+  out.innerHTML = `<span class="comment"># Save as ${name}-application.yaml</span>\n<span class="ok"># Apply: kubectl apply -f ${name}-application.yaml -n argocd</span>\n\n${manifest}`;
+  out.classList.add('visible');
+  out.onclick = () => copyText(manifest);
+}
+
+// ─── TOOL 4: WORKFLOW LINTER ─────────────────────────────────────────────────
+function lintWorkflow() {
+  const yaml = document.getElementById('lint-in').value;
+  const out = document.getElementById('lint-out');
+  const issues = [];
+  const ok = [];
+  if (!yaml.includes('actions/checkout')) issues.push({ type:'warn', msg:'Missing actions/checkout — you likely need to checkout code first' });
+  else ok.push('actions/checkout present');
+  if (yaml.match(/uses:\s+\S+@(main|master|latest)/)) issues.push({ type:'err', msg:'Pinning to branch/tag (main, master, latest) is unsafe — pin to a SHA: uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' });
+  if (!yaml.includes('permissions:')) issues.push({ type:'warn', msg:'No permissions block — add permissions: contents: read to follow least-privilege' });
+  else ok.push('permissions block present');
+  if (yaml.match(/echo\s+\$\{\{?\s*secrets\./)) issues.push({ type:'err', msg:'Avoid echoing secrets — they may appear in logs even when masked' });
+  if (yaml.match(/runs-on:\s+self-hosted/) && !yaml.includes('environment:')) issues.push({ type:'warn', msg:'Self-hosted runner without environment protection — consider adding environment: and required reviewers for prod' });
+  if (!yaml.includes('cache')) issues.push({ type:'info', msg:'No caching configured — add actions/cache or use built-in cache in setup actions to speed up runs' });
+  if (yaml.match(/password:\s+\$\{\{\s*secrets\.\w+\s*\}\}/)) ok.push('Secret referenced via secrets context (good)');
+  if (yaml.match(/timeout-minutes:/)) ok.push('Job timeout configured');
+  else issues.push({ type:'info', msg:'No timeout-minutes set — jobs run up to 6 hours by default; set a timeout to avoid wasted runner minutes' });
+  let result = '';
+  if (issues.length === 0 && ok.length > 0) result += `<span class="ok">✓ No critical issues found\n</span>`;
+  issues.forEach(i => {
+    if (i.type==='err') result += `<span class="err">✗ [ERROR] ${i.msg}\n</span>`;
+    else if (i.type==='warn') result += `<span class="warn">⚠ [WARN] ${i.msg}\n</span>`;
+    else result += `<span class="info">ℹ [INFO] ${i.msg}\n</span>`;
+  });
+  ok.forEach(o => result += `<span class="ok">✓ ${o}\n</span>`);
+  out.innerHTML = result || '<span class="comment">Paste a workflow to lint...</span>';
+  out.classList.add('visible');
+}
+
+// ─── TOOL 5: SECRET SCANNER ──────────────────────────────────────────────────
+function scanSecrets() {
+  const content = document.getElementById('sec-in').value;
+  const out = document.getElementById('sec-out');
+  const issues = [];
+  const patterns = [
+    { re: /AKIA[0-9A-Z]{16}/, msg:'AWS Access Key ID detected — rotate immediately and revoke' },
+    { re: /(?:password|passwd|pwd)\s*[:=]\s*['"]?[^\s'"$]{8,}/i, msg:'Hardcoded password detected — use ${{ secrets.MY_PASSWORD }} instead' },
+    { re: /(?:token|api_key|apikey|secret)\s*[:=]\s*['"]?[a-z0-9_\-]{20,}/i, msg:'Possible hardcoded token or API key — move to GitHub Secrets' },
+    { re: /-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----/, msg:'Private key detected in workflow — never commit private keys' },
+    { re: /echo\s+.*(PASSWORD|SECRET|TOKEN|KEY)/i, msg:'Printing secret-like variable to stdout — masked secrets may still leak in some contexts' },
+    { re: /curl.*-u\s+\w+:[^\s]+/, msg:'Credentials in curl command — use netrc file or Authorization header from secret' },
+    { re: /docker login.*-p\s+[^\$]/, msg:'Docker password not from secret — use docker/login-action or pipe from stdin' },
+  ];
+  patterns.forEach(p => { if (p.re.test(content)) issues.push(p.msg); });
+  const goodPatterns = [
+    { re: /\$\{\{\s*secrets\./, msg:'Secrets referenced via secrets context' },
+    { re: /permissions:/, msg:'permissions block present' },
+  ];
+  let result = '';
+  issues.forEach(i => result += `<span class="err">✗ ISSUE: ${i}\n</span>\n`);
+  goodPatterns.forEach(p => { if (p.re.test(content)) result += `<span class="ok">✓ ${p.msg}\n</span>`; });
+  if (!result) result = `<span class="ok">✓ No obvious hardcoded secrets detected\n</span><span class="comment"># Always review with truffleHog or gitleaks for deeper scanning</span>`;
+  out.innerHTML = result;
+  out.classList.add('visible');
+}
+
+// ─── TOOL 6: OIDC ────────────────────────────────────────────────────────────
+function buildOIDC() {
+  const provider = document.getElementById('oidc-provider').value;
+  const id = document.getElementById('oidc-id').value;
+  const region = document.getElementById('oidc-region').value || 'us-east-1';
+  const out = document.getElementById('oidc-out');
+  let snippet = '';
+  if (provider === 'aws') {
+    snippet = `permissions:\n  id-token: write\n  contents: read\n\nsteps:\n  - uses: actions/checkout@v4\n  - name: Configure AWS credentials\n    uses: aws-actions/configure-aws-credentials@v4\n    with:\n      role-to-assume: ${id}\n      aws-region: ${region}\n      role-session-name: GitHubActions\n  - name: Verify identity\n    run: aws sts get-caller-identity`;
+  } else if (provider === 'gcp') {
+    snippet = `permissions:\n  id-token: write\n  contents: read\n\nsteps:\n  - uses: actions/checkout@v4\n  - name: Authenticate to GCP\n    uses: google-github-actions/auth@v2\n    with:\n      workload_identity_provider: ${id}\n      service_account: github-actions@project-id.iam.gserviceaccount.com\n  - name: Set up gcloud\n    uses: google-github-actions/setup-gcloud@v2`;
+  } else {
+    snippet = `permissions:\n  id-token: write\n  contents: read\n\nsteps:\n  - uses: actions/checkout@v4\n  - name: Azure login\n    uses: azure/login@v2\n    with:\n      client-id: ${id}\n      tenant-id: \${{ secrets.AZURE_TENANT_ID }}\n      subscription-id: \${{ secrets.AZURE_SUBSCRIPTION_ID }}`;
+  }
+  out.innerHTML = `<span class="comment"># OIDC auth — no long-lived credentials stored in GitHub</span>\n${snippet}`;
+  out.classList.add('visible');
+  out.onclick = () => copyText(snippet);
+}
+
+// ─── TOOL 7: MATRIX ──────────────────────────────────────────────────────────
+function buildMatrix() {
+  const os = document.getElementById('mat-os').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const ver = document.getElementById('mat-ver').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const excl = document.getElementById('mat-excl').value;
+  let yaml = `strategy:\n  fail-fast: false\n  matrix:\n    os: [${os.map(o=>`${o}`).join(', ')}]\n    node-version: [${ver.join(', ')}]`;
+  if (excl && excl.includes('+')) {
+    const parts = excl.split('+').map(s=>s.trim());
+    yaml += `\n    exclude:\n      - os: ${parts[0]}\n        node-version: ${parts[1]}`;
+  }
+  yaml += `\n\nruns-on: \${{ matrix.os }}\nsteps:\n  - uses: actions/setup-node@v4\n    with:\n      node-version: \${{ matrix.node-version }}`;
+  const out = document.getElementById('mat-out');
+  out.innerHTML = `<span class="comment"># Matrix generates ${os.length * ver.length} jobs total</span>\n${yaml}`;
+  out.classList.add('visible');
+  out.onclick = () => copyText(yaml);
+}
+
+// ─── TOOL 8: ROLLBACK ────────────────────────────────────────────────────────
+function buildRollback() {
+  const method = document.getElementById('rb-method').value;
+  const name = document.getElementById('rb-name').value || 'myapp';
+  const ns = document.getElementById('rb-ns').value || 'production';
+  const out = document.getElementById('rb-out');
+  const cmds = {
+    argocd: `# ArgoCD rollback\n\n# 1. List revision history\nargocd app history ${name}\n\n# 2. Rollback to a specific revision\nargocd app rollback ${name} <REVISION_ID>\n\n# 3. Verify sync status\nargocd app get ${name}\n\n# 4. Check app health\nargocd app wait ${name} --health`,
+    helm: `# Helm rollback\n\n# 1. List release history\nhelm history ${name} -n ${ns}\n\n# 2. Rollback to previous release\nhelm rollback ${name} -n ${ns}\n\n# 3. Rollback to specific revision\nhelm rollback ${name} <REVISION> -n ${ns}\n\n# 4. Verify\nhelm status ${name} -n ${ns}`,
+    kubectl: `# kubectl Deployment rollback\n\n# 1. Check rollout history\nkubectl rollout history deployment/${name} -n ${ns}\n\n# 2. Rollback to previous revision\nkubectl rollout undo deployment/${name} -n ${ns}\n\n# 3. Rollback to specific revision\nkubectl rollout undo deployment/${name} --to-revision=<N> -n ${ns}\n\n# 4. Watch rollout status\nkubectl rollout status deployment/${name} -n ${ns}`,
+    gha: `# Re-run a GitHub Actions job\n\n# Via GitHub CLI\ngh run list --workflow=ci.yml --limit 10\ngh run rerun <RUN_ID> --failed-only\n\n# Re-run specific failed jobs\ngh run rerun <RUN_ID> --job <JOB_ID>\n\n# Watch the re-run\ngh run watch <RUN_ID>`
+  };
+  out.innerHTML = `<span class="ok">${cmds[method]}</span>`;
+  out.classList.add('visible');
+  out.onclick = () => copyText(cmds[method]);
+}
+
+// ─── PIPELINE VISUALIZER ─────────────────────────────────────────────────────
+const visTemplates = {
+  nodejs: [
+    { title: 'Checkout & Setup', jobs: [{name:'checkout', icon:'📥', status:'success'},{name:'setup-node', icon:'⬡', status:'success'}] },
+    { title: 'Quality', jobs: [{name:'lint', icon:'🔍', status:'success'},{name:'test', icon:'✓', status:'success'},{name:'coverage', icon:'📊', status:'success'}] },
+    { title: 'Build', jobs: [{name:'docker-build', icon:'🐳', status:'running'}] },
+    { title: 'Publish', jobs: [{name:'push-ghcr', icon:'📦', status:'pending'}] },
+    { title: 'Deploy', jobs: [{name:'argocd-sync', icon:'🐙', status:'pending'}] },
+  ],
+  python: [
+    { title: 'Checkout', jobs: [{name:'checkout', icon:'📥', status:'success'}] },
+    { title: 'Quality', jobs: [{name:'flake8', icon:'🔍', status:'success'},{name:'pytest', icon:'✓', status:'success'}] },
+    { title: 'Security', jobs: [{name:'bandit', icon:'🔒', status:'running'},{name:'trivy', icon:'🛡', status:'pending'}] },
+    { title: 'Build', jobs: [{name:'docker-ecr', icon:'🐳', status:'pending'}] },
+    { title: 'Deploy', jobs: [{name:'ecs-update', icon:'🚀', status:'pending'}] },
+  ],
+  helm: [
+    { title: 'Validate', jobs: [{name:'helm-lint', icon:'🔍', status:'success'},{name:'helm-template', icon:'📋', status:'success'}] },
+    { title: 'Test', jobs: [{name:'helm-test', icon:'✓', status:'success'},{name:'kubeval', icon:'✅', status:'success'}] },
+    { title: 'Package', jobs: [{name:'helm-package', icon:'📦', status:'running'}] },
+    { title: 'Release', jobs: [{name:'chart-releaser', icon:'🚀', status:'pending'}] },
+  ],
+  multi: [
+    { title: 'CI', jobs: [{name:'test', icon:'✓', status:'success'},{name:'build', icon:'🐳', status:'success'}] },
+    { title: 'Dev', jobs: [{name:'deploy-dev', icon:'🟢', status:'success'}] },
+    { title: 'Staging', jobs: [{name:'deploy-staging', icon:'🟡', status:'running'},{name:'integration-tests', icon:'✓', status:'pending'}] },
+    { title: 'Approval', jobs: [{name:'manual-gate', icon:'🔐', status:'pending'}] },
+    { title: 'Production', jobs: [{name:'deploy-prod', icon:'🚀', status:'pending'}] },
+  ]
+};
+
+function renderVisualizer() {
+  const key = document.getElementById('vis-template').value;
+  const stages = visTemplates[key];
+  const container = document.getElementById('vis-stages');
+  container.innerHTML = '';
+  stages.forEach((stage, i) => {
+    const div = document.createElement('div');
+    div.className = 'pipe-stage';
+    div.innerHTML = `<div class="pipe-stage-title">${stage.title}</div>${stage.jobs.map(j => `<div class="pipe-job ${j.status}"><span class="pipe-job-icon">${j.icon}</span>${j.name}</div>`).join('')}`;
+    container.appendChild(div);
+  });
+  // Animate running job
+  let idx = 0;
+  const running = container.querySelectorAll('.pipe-job.running');
+  running.forEach(el => {
+    setInterval(() => {
+      el.style.opacity = el.style.opacity === '0.5' ? '1' : '0.5';
+    }, 600);
+  });
+}
+renderVisualizer();
+
+// ─── CHEATSHEET DATA ─────────────────────────────────────────────────────────
+const cheatData = [
+  // GitHub Actions
+  { cmd: 'gh workflow list', desc: 'List all workflows in the repo', cat: 'gha' },
+  { cmd: 'gh workflow run ci.yml', desc: 'Manually trigger a workflow', cat: 'gha' },
+  { cmd: 'gh run list --workflow=ci.yml', desc: 'List recent runs for a workflow', cat: 'gha' },
+  { cmd: 'gh run view <RUN_ID> --log', desc: 'View logs for a specific run', cat: 'gha' },
+  { cmd: 'gh run view <RUN_ID> --log-failed', desc: 'Show only failed job logs', cat: 'gha' },
+  { cmd: 'gh run rerun <RUN_ID> --failed-only', desc: 'Re-run only failed jobs', cat: 'gha' },
+  { cmd: 'gh run cancel <RUN_ID>', desc: 'Cancel an in-progress run', cat: 'gha' },
+  { cmd: 'gh run download <RUN_ID>', desc: 'Download all artifacts from a run', cat: 'gha' },
+  { cmd: 'gh secret set MY_SECRET', desc: 'Set a repository secret (prompts for value)', cat: 'gha' },
+  { cmd: 'gh secret list', desc: 'List all secrets in the repo', cat: 'gha' },
+  { cmd: 'gh cache list', desc: 'List Actions cache entries', cat: 'gha' },
+  { cmd: 'gh cache delete --all', desc: 'Delete all cache entries', cat: 'gha' },
+  { cmd: 'gh api /repos/{owner}/{repo}/actions/runs', desc: 'List workflow runs via API', cat: 'gha' },
+  { cmd: 'GITHUB_TOKEN permissions: contents: read', desc: 'Least-privilege token permission', cat: 'gha' },
+  { cmd: 'actions/checkout@v4', desc: 'Check out repository code', cat: 'gha' },
+  { cmd: 'actions/cache@v4', desc: 'Cache files between runs', cat: 'gha' },
+  { cmd: 'actions/upload-artifact@v4', desc: 'Upload job artifacts', cat: 'gha' },
+  { cmd: 'actions/download-artifact@v4', desc: 'Download artifacts from previous jobs', cat: 'gha' },
+  { cmd: 'docker/build-push-action@v5', desc: 'Build and push Docker image', cat: 'gha' },
+  { cmd: 'docker/login-action@v3', desc: 'Log in to container registry', cat: 'gha' },
+  // ArgoCD
+  { cmd: 'argocd app list', desc: 'List all ArgoCD applications', cat: 'argo' },
+  { cmd: 'argocd app get myapp', desc: 'Get detailed app status', cat: 'argo' },
+  { cmd: 'argocd app sync myapp', desc: 'Manually trigger a sync', cat: 'argo' },
+  { cmd: 'argocd app sync myapp --force', desc: 'Force sync (ignores cached state)', cat: 'argo' },
+  { cmd: 'argocd app sync myapp --dry-run', desc: 'Preview changes without applying', cat: 'argo' },
+  { cmd: 'argocd app history myapp', desc: 'Show deployment history', cat: 'argo' },
+  { cmd: 'argocd app rollback myapp <ID>', desc: 'Roll back to a specific revision', cat: 'argo' },
+  { cmd: 'argocd app wait myapp --health', desc: 'Wait until app is healthy', cat: 'argo' },
+  { cmd: 'argocd app wait myapp --sync --timeout 120', desc: 'Wait for sync with timeout', cat: 'argo' },
+  { cmd: 'argocd app delete myapp', desc: 'Delete an application', cat: 'argo' },
+  { cmd: 'argocd app set myapp --sync-policy automated', desc: 'Enable auto-sync on running app', cat: 'argo' },
+  { cmd: 'argocd app patch myapp --patch \'[{"op":"replace","path":"/spec/syncPolicy","value":{"automated":{}}}]\'', desc: 'Patch app with JSON patch', cat: 'argo' },
+  { cmd: 'argocd cluster list', desc: 'List registered clusters', cat: 'argo' },
+  { cmd: 'argocd repo list', desc: 'List registered Git repositories', cat: 'argo' },
+  { cmd: 'argocd login <ARGOCD_SERVER>', desc: 'Log in to ArgoCD server', cat: 'argo' },
+  { cmd: 'kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d', desc: 'Get initial ArgoCD admin password', cat: 'argo' },
+  { cmd: 'argocd app create myapp --repo <URL> --path k8s/ --dest-namespace prod', desc: 'Create app via CLI', cat: 'argo' },
+  // Git
+  { cmd: 'git log --oneline -10', desc: 'Show last 10 commits in short form', cat: 'git' },
+  { cmd: 'git revert HEAD --no-edit', desc: 'Create revert commit for last commit', cat: 'git' },
+  { cmd: 'git reset --soft HEAD~1', desc: 'Undo last commit, keep changes staged', cat: 'git' },
+  { cmd: 'git cherry-pick <SHA>', desc: 'Apply a specific commit to current branch', cat: 'git' },
+  { cmd: 'git tag v1.0.0 && git push --tags', desc: 'Create and push a release tag', cat: 'git' },
+  { cmd: 'git stash && git stash pop', desc: 'Stash and restore working changes', cat: 'git' },
+  { cmd: 'git diff main..feature-branch', desc: 'Show diff between branches', cat: 'git' },
+  { cmd: 'git bisect start && git bisect bad && git bisect good <SHA>', desc: 'Binary search to find regression commit', cat: 'git' },
+  // Docker
+  { cmd: 'docker buildx build --platform linux/amd64,linux/arm64 -t image:tag --push .', desc: 'Multi-platform build and push', cat: 'docker' },
+  { cmd: 'docker build --cache-from type=registry,ref=image:cache -t image:latest .', desc: 'Build with registry cache', cat: 'docker' },
+  { cmd: 'docker build --secret id=mysecret,src=./secret.txt .', desc: 'Use build secret (not baked into layer)', cat: 'docker' },
+  { cmd: 'docker image inspect image:tag | jq .[].RepoDigests', desc: 'Get image digest for pinning', cat: 'docker' },
+  { cmd: 'trivy image image:tag', desc: 'Scan image for CVEs with Trivy', cat: 'docker' },
+  { cmd: 'syft image:tag -o spdx-json > sbom.spdx.json', desc: 'Generate SBOM for container image', cat: 'docker' },
+  { cmd: 'cosign sign --yes image@<DIGEST>', desc: 'Sign image with Sigstore (keyless)', cat: 'docker' },
+  { cmd: 'cosign verify --certificate-oidc-issuer https://token.actions.githubusercontent.com image@<DIGEST>', desc: 'Verify image signature from GitHub Actions', cat: 'docker' },
+  // Helm
+  { cmd: 'helm lint ./charts/myapp', desc: 'Lint a Helm chart for errors', cat: 'helm' },
+  { cmd: 'helm template myapp ./charts/myapp -f values.prod.yaml', desc: 'Render chart templates without deploying', cat: 'helm' },
+  { cmd: 'helm install myapp ./charts/myapp -n prod --create-namespace', desc: 'Install chart to namespace', cat: 'helm' },
+  { cmd: 'helm upgrade myapp ./charts/myapp -n prod --atomic --timeout 3m', desc: 'Upgrade with auto rollback on failure', cat: 'helm' },
+  { cmd: 'helm history myapp -n prod', desc: 'Show release history', cat: 'helm' },
+  { cmd: 'helm rollback myapp -n prod', desc: 'Roll back to previous release', cat: 'helm' },
+  { cmd: 'helm get values myapp -n prod', desc: 'Show current values for release', cat: 'helm' },
+  { cmd: 'helm diff upgrade myapp ./charts/myapp', desc: 'Preview diff before upgrade (helm-diff plugin)', cat: 'helm' },
+];
+
+function renderCheat(filter='all', search='') {
+  const tbody = document.getElementById('cheat-body');
+  const catClass = { gha:'cat-gha', argo:'cat-argo', git:'cat-git', docker:'cat-docker', helm:'cat-helm' };
+  const catLabel = { gha:'GitHub Actions', argo:'ArgoCD', git:'Git', docker:'Docker', helm:'Helm' };
+  const rows = cheatData.filter(r =>
+    (filter==='all' || r.cat===filter) &&
+    (!search || r.cmd.toLowerCase().includes(search) || r.desc.toLowerCase().includes(search))
+  );
+  tbody.innerHTML = rows.map(r => `<tr onclick="copyText('${r.cmd.replace(/'/g,"\\'")}')">
+    <td><span class="cheat-cmd">${r.cmd}</span></td>
+    <td><span class="cheat-desc">${r.desc}</span></td>
+    <td><span class="cheat-cat ${catClass[r.cat]}">${catLabel[r.cat]}</span></td>
+  </tr>`).join('');
+}
+renderCheat();
+document.getElementById('cheat-filter').addEventListener('click', e => {
+  if (!e.target.classList.contains('ftab')) return;
+  document.querySelectorAll('#cheat-filter .ftab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderCheat(e.target.dataset.filter, document.getElementById('cheat-search').value.toLowerCase());
+});
+function filterCheat() {
+  const activeFilter = document.querySelector('#cheat-filter .ftab.active')?.dataset.filter || 'all';
+  renderCheat(activeFilter, document.getElementById('cheat-search').value.toLowerCase());
+}
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = [
+  { q: 'Which GitHub Actions event triggers a workflow ONLY when a PR is opened or updated, not when it is merged?', opts: ['push', 'pull_request', 'pull_request_target', 'merge_group'], ans: 1, exp: 'The <code>pull_request</code> event fires on PR open, sync, and reopen but NOT on merge. The merge push triggers the <code>push</code> event on the target branch.', topic: 'gha' },
+  { q: 'Your GitHub Actions job needs AWS credentials without storing long-lived keys. What is the recommended approach?', opts: ['Store AWS keys in repository secrets', 'Use OIDC with aws-actions/configure-aws-credentials', 'Hardcode credentials in the workflow file', 'Use environment variables in the runner'], ans: 1, exp: 'OIDC lets GitHub Actions exchange a short-lived token with AWS, so you never store <code>AWS_ACCESS_KEY_ID</code> or <code>AWS_SECRET_ACCESS_KEY</code>. This requires setting up an IAM OIDC provider in AWS.', topic: 'gha' },
+  { q: 'What does the `needs` keyword do in a GitHub Actions workflow?', opts: ['Installs required packages', 'Defines job dependencies and execution order', 'Sets environment variables', 'Specifies required secrets'], ans: 1, exp: '<code>needs: [build, test]</code> means the current job will not start until both the <code>build</code> and <code>test</code> jobs complete successfully.', topic: 'gha' },
+  { q: 'How do you run a job only when the push is to the main branch?', opts: ['using: main-only', 'if: github.ref == \'refs/heads/main\'', 'branch: main', 'on: main'], ans: 1, exp: 'The <code>if</code> conditional uses the <code>github.ref</code> context. The full ref for main is <code>refs/heads/main</code>. You can also use <code>github.ref_name == \'main\'</code>.', topic: 'gha' },
+  { q: 'What is the risk of using `pull_request_target` event with `actions/checkout`?', opts: ['It is slower than pull_request', 'It runs in the context of the base branch, potentially allowing untrusted PRs to access secrets', 'It does not support caching', 'It only works for internal PRs'], ans: 1, exp: '<code>pull_request_target</code> has access to secrets and runs in base repo context. If you check out the PR code, you can execute untrusted code with secret access — a critical security risk.', topic: 'security' },
+  { q: 'Which ArgoCD sync phase happens BEFORE the main Kubernetes manifests are applied?', opts: ['PostSync', 'SyncFail', 'PreSync', 'Skip'], ans: 2, exp: 'Hooks annotated with <code>argocd.argoproj.io/hook: PreSync</code> run before the sync. This is used for database migrations, pre-flight checks, etc.', topic: 'argocd' },
+  { q: 'An ArgoCD app shows "OutOfSync" but "Healthy". What does this mean?', opts: ['The app is broken', 'The live state differs from Git but the app is running fine', 'ArgoCD cannot reach the cluster', 'The Git repo is unreachable'], ans: 1, exp: 'OutOfSync means the live cluster state does not match the desired state in Git. Healthy means the workloads are running. This happens when auto-sync is off and a manual change was made.', topic: 'argocd' },
+  { q: 'What is the "App of Apps" pattern in ArgoCD?', opts: ['Multiple ArgoCD servers managing one app', 'One ArgoCD Application that creates and manages other Applications', 'An app running multiple containers', 'A multi-cluster deployment pattern'], ans: 1, exp: 'The App of Apps pattern uses one root Application pointing to a directory of Application manifests. ArgoCD syncs the root app, which creates child applications — enabling GitOps-managed ArgoCD itself.', topic: 'argocd' },
+  { q: 'How does ArgoCD Image Updater work?', opts: ['It watches DockerHub and updates container resources directly in the cluster', 'It watches a container registry and writes image tag updates back to Git', 'It rebuilds images on every git push', 'It schedules daily image pulls'], ans: 1, exp: 'Image Updater polls your container registry, and when a new tag matching your policy is found, it commits the updated image tag back to your Git config repo — maintaining GitOps principles.', topic: 'argocd' },
+  { q: 'What does `prune: true` in an ArgoCD sync policy do?', opts: ['Removes ArgoCD itself', 'Deletes resources from the cluster that are no longer in Git', 'Compresses the sync history', 'Removes failed sync records'], ans: 1, exp: '<code>prune: true</code> means ArgoCD will delete Kubernetes resources that exist in the cluster but are no longer in the Git repository. Without this, removed manifests leave orphaned resources.', topic: 'argocd' },
+  { q: 'What is the key difference between push-based and pull-based GitOps?', opts: ['Push uses Git, pull does not', 'In push-based, CI deploys directly; in pull-based, an agent in the cluster polls Git and applies changes', 'Pull-based is faster', 'Push-based is more secure'], ans: 1, exp: 'ArgoCD/Flux use pull-based: the agent runs inside the cluster and pulls from Git. Push-based (CI/CD pipeline runs kubectl/helm) requires cluster credentials in CI, which is a larger attack surface.', topic: 'gitops' },
+  { q: 'Why should you maintain a separate Git repository for application config vs application code?', opts: ['It is a GitHub requirement', 'It separates CI concerns from CD concerns — code changes trigger builds, config changes trigger deployments', 'To reduce costs', 'For compliance reasons only'], ans: 1, exp: 'Separating repos lets you promote releases by updating image tags in the config repo without touching code. It also enables different access controls: developers write to code repo, CD writes to config repo.', topic: 'gitops' },
+  { q: 'What is SLSA (Supply-chain Levels for Software Artifacts)?', opts: ['A signing algorithm', 'A framework of security levels for verifying software build integrity and provenance', 'A container runtime', 'A Kubernetes admission controller'], ans: 1, exp: 'SLSA defines 4 levels of supply chain security. Level 1 requires provenance. Level 3 requires a hermetic, reproducible build system. Higher levels give stronger guarantees against tampering.', topic: 'security' },
+  { q: 'What does `cosign sign` do for a container image?', opts: ['Encrypts the image', 'Creates a cryptographic signature stored in an OCI registry, proving the image origin', 'Scans the image for vulnerabilities', 'Compresses the image layers'], ans: 1, exp: 'Cosign attaches a signature to the image in the OCI registry. Keyless signing uses OIDC identity (e.g. GitHub Actions OIDC token) via Sigstore — no key management needed.', topic: 'security' },
+  { q: 'Which strategy allows routing a percentage of traffic to a new version before full rollout?', opts: ['Rolling update', 'Blue-green', 'Canary', 'Recreate'], ans: 2, exp: 'Canary deployments route a small percentage (e.g. 5%) to the new version. If metrics are healthy, traffic is incrementally increased. Argo Rollouts automates this with Prometheus-based analysis.', topic: 'argocd' },
+  { q: 'What is the GitHub Actions `permissions` block used for?', opts: ['Set runner OS permissions', 'Define GITHUB_TOKEN scopes for the job to follow least privilege', 'Configure secret access', 'Set file system permissions'], ans: 1, exp: 'By default GITHUB_TOKEN has broad permissions. Adding <code>permissions: contents: read</code> limits the token scope. This reduces blast radius if the workflow is compromised.', topic: 'security' },
+  { q: 'What does pinning a GitHub Action to a SHA do (e.g., `uses: actions/checkout@11bd719...`)?', opts: ['Makes the workflow faster', 'Ensures the exact same code runs every time, preventing supply chain attacks', 'Reduces cache misses', 'It is just for documentation'], ans: 1, exp: 'Tags like <code>@v4</code> can be moved by the action maintainer. Pinning to a full commit SHA ensures you always run the exact version you reviewed, protecting against tag-based supply chain attacks.', topic: 'security' },
+  { q: 'What is the `fail-fast` option in a matrix strategy?', opts: ['Cancels ALL matrix jobs if any one fails (default: true)', 'Makes jobs run faster', 'Skips failed jobs silently', 'Retries failed jobs automatically'], ans: 0, exp: 'By default (<code>fail-fast: true</code>), GitHub cancels all remaining matrix jobs when any one fails. Set <code>fail-fast: false</code> to let all matrix combinations complete regardless.', topic: 'gha' },
+  { q: 'How do you pass output from one job to another in GitHub Actions?', opts: ['Using global environment variables', 'Using job outputs: set with outputs: in one job, reference with needs.<job>.outputs in another', 'Using artifact upload/download', 'Outputs cannot be passed between jobs'], ans: 1, exp: 'Define <code>outputs</code> in the producing job using <code>echo "name=value" >> $GITHUB_OUTPUT</code>, declare in <code>outputs:</code> block, then access with <code>${{ needs.build.outputs.version }}</code>.', topic: 'gha' },
+  { q: 'What is a Sealed Secret in the context of GitOps?', opts: ['A secret encrypted with cluster public key, safe to commit to Git', 'An ArgoCD feature for hiding values', 'A Kubernetes built-in encryption mechanism', 'A HashiCorp Vault concept'], ans: 0, exp: 'Bitnami Sealed Secrets encrypts a Secret with the cluster\'s public key. The SealedSecret object is safe to commit to Git. Only the cluster controller can decrypt it back into a Kubernetes Secret.', topic: 'gitops' },
+];
+
+let currentQ = 0, score = 0, answered = 0, activeQuizData = [...quizData];
+function renderQuiz() {
+  if (currentQ >= activeQuizData.length) { showQuizEnd(); return; }
+  const q = activeQuizData[currentQ];
+  document.getElementById('quiz-q').textContent = `Q${currentQ+1}. ${q.q}`;
+  document.getElementById('quiz-opts').innerHTML = q.opts.map((o,i) =>
+    `<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`
+  ).join('');
+  document.getElementById('quiz-exp').classList.remove('visible');
+  document.getElementById('quiz-next').style.display = 'none';
+  document.getElementById('quiz-score').textContent = `Score: ${score} / ${answered}`;
+  const pct = Math.round((currentQ / activeQuizData.length) * 100);
+  document.getElementById('quiz-bar').style.width = pct + '%';
+}
+function answerQuiz(idx) {
+  const q = activeQuizData[currentQ];
+  document.querySelectorAll('.quiz-opt').forEach((b,i) => {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+  answered++;
+  if (idx === q.ans) score++;
+  document.getElementById('quiz-exp').innerHTML = q.exp;
+  document.getElementById('quiz-exp').classList.add('visible');
+  document.getElementById('quiz-next').style.display = '';
+  document.getElementById('quiz-score').textContent = `Score: ${score} / ${answered}`;
+}
+function nextQuestion() { currentQ++; renderQuiz(); }
+function skipQuestion() { currentQ++; renderQuiz(); }
+function showQuizEnd() {
+  document.getElementById('quiz-container').style.display = 'none';
+  document.getElementById('quiz-end').classList.add('visible');
+  document.getElementById('final-score').textContent = `${score}/${answered}`;
+  document.getElementById('quiz-bar').style.width = '100%';
+}
+function restartQuiz() {
+  currentQ = 0; score = 0; answered = 0;
+  document.getElementById('quiz-container').style.display = '';
+  document.getElementById('quiz-end').classList.remove('visible');
+  renderQuiz();
+}
+document.getElementById('quiz-filter').addEventListener('click', e => {
+  if (!e.target.classList.contains('ftab')) return;
+  document.querySelectorAll('#quiz-filter .ftab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  const f = e.target.dataset.qfilter;
+  activeQuizData = f === 'all' ? [...quizData] : quizData.filter(q => q.topic === f);
+  currentQ = 0; score = 0; answered = 0;
+  renderQuiz();
+});
+renderQuiz();
+
+// ─── SNIPPETS DATA ────────────────────────────────────────────────────────────
+const snippets = [
+  { title: 'Node.js CI workflow', cat: 'gha', code: `name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test` },
+  { title: 'Docker build & push to GHCR', cat: 'gha', code: `- name: Login to GHCR
+  uses: docker/login-action@v3
+  with:
+    registry: ghcr.io
+    username: \${{ github.actor }}
+    password: \${{ secrets.GITHUB_TOKEN }}
+
+- name: Build and push
+  uses: docker/build-push-action@v5
+  with:
+    push: \${{ github.ref == 'refs/heads/main' }}
+    tags: ghcr.io/\${{ github.repository }}:\${{ github.sha }}
+    cache-from: type=gha
+    cache-to: type=gha,mode=max` },
+  { title: 'AWS OIDC authentication', cat: 'security', code: `permissions:
+  id-token: write
+  contents: read
+
+- name: Configure AWS credentials
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::123456789:role/github-actions
+    aws-region: us-east-1
+    role-session-name: GitHubActions-\${{ github.run_id }}` },
+  { title: 'ArgoCD Application (auto-sync)', cat: 'argocd', code: `apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/org/config
+    targetRevision: HEAD
+    path: k8s/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true` },
+  { title: 'ArgoCD App of Apps root', cat: 'argocd', code: `apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/org/gitops
+    targetRevision: HEAD
+    path: apps/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true` },
+  { title: 'Multi-env matrix workflow', cat: 'gha', code: `strategy:
+  fail-fast: false
+  matrix:
+    environment: [dev, staging, production]
+    include:
+      - environment: dev
+        namespace: dev
+        cluster: dev-cluster
+      - environment: production
+        namespace: production
+        cluster: prod-cluster
+
+runs-on: ubuntu-latest
+environment: \${{ matrix.environment }}` },
+  { title: 'Reusable workflow definition', cat: 'gha', code: `# .github/workflows/reusable-build.yml
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+    outputs:
+      image-tag:
+        value: \${{ jobs.build.outputs.tag }}
+    secrets:
+      registry-token:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: \${{ steps.meta.outputs.tags }}` },
+  { title: 'Helm deploy in GitHub Actions', cat: 'helm', code: `- name: Setup Helm
+  uses: azure/setup-helm@v4
+  with:
+    version: v3.14.0
+
+- name: Deploy with Helm
+  run: |
+    helm upgrade --install myapp ./charts/myapp \\
+      --namespace production \\
+      --create-namespace \\
+      --set image.tag=\${{ github.sha }} \\
+      --atomic \\
+      --timeout 5m \\
+      --values values.production.yaml` },
+  { title: 'Image signing with cosign', cat: 'security', code: `- name: Install cosign
+  uses: sigstore/cosign-installer@v3
+
+- name: Sign image
+  run: |
+    cosign sign --yes \\
+      ghcr.io/\${{ github.repository }}@\${{ steps.build.outputs.digest }}
+  env:
+    COSIGN_EXPERIMENTAL: 1` },
+  { title: 'ArgoCD sync wave ordering', cat: 'argocd', code: `# Wave -1: Namespace and CRDs
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapp
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+---
+# Wave 0: ConfigMaps and Secrets
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+---
+# Wave 1: Database
+# Wave 2: Application
+# Wave 3: Ingress` },
+  { title: 'Dependency caching (Node)', cat: 'gha', code: `- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+
+# Or manual cache for more control
+- uses: actions/cache@v4
+  with:
+    path: ~/.npm
+    key: \${{ runner.os }}-node-\${{ hashFiles('**/package-lock.json') }}
+    restore-keys: |
+      \${{ runner.os }}-node-` },
+  { title: 'ArgoCD PreSync hook (DB migration)', cat: 'argocd', code: `apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: myapp:latest
+          command: ["python", "manage.py", "migrate"]
+      restartPolicy: Never` },
+];
+
+function renderSnippets(filter='all') {
+  const grid = document.getElementById('snippet-grid');
+  const filtered = filter === 'all' ? snippets : snippets.filter(s => s.cat === filter);
+  grid.innerHTML = filtered.map((s,i) => `
+    <div class="snippet-card" data-cat="${s.cat}">
+      <div class="snippet-head">
+        <div class="snippet-title">${s.title}</div>
+        <button class="copy-btn" onclick="copyText(\`${s.code.replace(/`/g,'\\`')}\`)">⎘ copy</button>
+      </div>
+      <div class="snippet-code">${s.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>`).join('');
+}
+renderSnippets();
+document.getElementById('snip-filter').addEventListener('click', e => {
+  if (!e.target.classList.contains('ftab')) return;
+  document.querySelectorAll('#snip-filter .ftab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderSnippets(e.target.dataset.filter);
+});
+
+// ─── ERROR DATA ───────────────────────────────────────────────────────────────
+const errorsData = [
+  { name: 'Error: No such file or directory: Dockerfile', cat: 'docker', sev: 'critical', cause: 'Linux is case-sensitive. The file is named "dockerfile" but Docker expects "Dockerfile".', fix: '# Check the actual filename\nls -la | grep -i docker\n\n# Fix: rename\nmv dockerfile Dockerfile\ngit add Dockerfile && git commit -m "fix: rename Dockerfile"' },
+  { name: 'Error: Resource not accessible by integration (403)', cat: 'gha', sev: 'critical', cause: 'The GITHUB_TOKEN lacks required permissions. Default permissions may be read-only in your org settings.', fix: '# Add permissions block to the job or workflow\npermissions:\n  contents: write  # or: read, packages: write, etc.\n\n# Or check org settings:\n# Settings → Actions → General → Workflow permissions' },
+  { name: 'argocd: app is not synced and 1 resources are out of sync', cat: 'argocd', sev: 'warning', cause: 'Live cluster state differs from Git. Usually a manual kubectl edit or a resource not in Git.', fix: '# See what is out of sync\nargocd app diff myapp\n\n# Force sync\nargocd app sync myapp\n\n# If resource was manually deleted from Git, add --prune\nargocd app sync myapp --prune' },
+  { name: 'Error: failed to create LFS file', cat: 'git', sev: 'warning', cause: 'Large file (>100MB) committed to Git. GitHub rejects pushes with files over the limit.', fix: '# Remove from history\ngit filter-repo --path largefile.bin --invert-paths\n\n# Or use Git LFS\ngit lfs track "*.bin"\ngit add .gitattributes\ngit commit -m "track binaries with LFS"' },
+  { name: 'ComparisonFailure: Application is not healthy (Degraded)', cat: 'argocd', sev: 'critical', cause: 'ArgoCD health check reports one or more resources are Degraded. Commonly a CrashLoopBackOff pod or failed Deployment.', fix: '# Get resource health\nargocd app get myapp --show-params\n\n# Check pod status\nkubectl get pods -n production\nkubectl describe pod <pod-name> -n production\nkubectl logs <pod-name> -n production --previous' },
+  { name: 'Error: secrets "my-secret" not found', cat: 'argocd', sev: 'critical', cause: 'App references a Secret that does not exist in the namespace. Common when using Sealed Secrets or External Secrets Operator and the controller has not run yet.', fix: '# Check if sealed secret exists\nkubectl get sealedsecrets -n production\n\n# Check ESO ExternalSecret status\nkubectl get externalsecret -n production\n\n# Manually verify secret was created\nkubectl get secret my-secret -n production' },
+  { name: 'Error: context deadline exceeded (helm upgrade)', cat: 'gha', sev: 'critical', cause: 'Helm --timeout reached. Deployment is taking too long — usually an image pull issue, insufficient resources, or failing readiness probes.', fix: '# Check pod events\nkubectl describe pod -n production | grep -A5 Events\n\n# Check pending pods\nkubectl get pods -n production -w\n\n# Increase timeout\nhelm upgrade myapp ./chart --timeout 10m --atomic' },
+  { name: 'Warning: skipping unknown field "spec.template.spec.containers[0].image"', cat: 'argocd', sev: 'warning', cause: 'ArgoCD is warning about a field in the manifest it does not recognize. Usually a typo or unsupported API field.', fix: '# Validate manifest locally\nkubectl --dry-run=client apply -f deployment.yaml\n\n# Or use kubeval\nkubeval deployment.yaml\n\n# Check for YAML indentation errors\ncat -A deployment.yaml | grep -n "\\^I"' },
+  { name: 'Error: unable to retrieve some secrets (gha secret not found)', cat: 'gha', sev: 'critical', cause: 'Secret referenced in workflow does not exist in the repository, organization, or environment. Also occurs if running from a fork.', fix: '# Secrets are not available in fork PRs by default\n# Check secret name exactly matches: Settings → Secrets → Actions\n\n# For environment secrets, ensure environment name matches:\nenvironment: production  # must match the environment where secret is defined\n\n# Fork PRs: use pull_request_target (carefully!) or require approved runs' },
+  { name: 'ArgoCD app stuck in "Progressing" state', cat: 'argocd', sev: 'warning', cause: 'A resource is not reaching Ready state. Often a Deployment with insufficient replicas, PVC pending, or a Job not completing.', fix: '# Check which resource is progressing\nargocd app get myapp\n\n# Check PVCs if storage is involved\nkubectl get pvc -n production\n\n# Check job status\nkubectl get jobs -n production\n\n# Force sync to refresh state\nargocd app sync myapp --force' },
+  { name: 'Error: this workflow is not allowed to create pull requests', cat: 'gha', sev: 'warning', cause: 'GITHUB_TOKEN lacks pull-requests: write permission. Required for actions that open PRs like peter-evans/create-pull-request.', fix: 'permissions:\n  contents: write\n  pull-requests: write\n\n# Also ensure org settings allow GitHub Actions to create PRs:\n# Settings → Actions → General → Allow GitHub Actions to create PRs' },
+  { name: 'Error: ImagePullBackOff on ArgoCD deployed pod', cat: 'docker', sev: 'critical', cause: 'Kubernetes cannot pull the container image. Either wrong image tag, registry authentication missing, or private registry not configured.', fix: '# Check pod events\nkubectl describe pod <pod-name> -n production | grep -A5 "Events:"\n\n# Verify image exists\ndocker manifest inspect ghcr.io/org/app:sha\n\n# Check imagePullSecret\nkubectl get secret regcred -n production\n\n# Add imagePullSecrets to deployment\nspec:\n  imagePullSecrets:\n    - name: regcred' },
+];
+
+function renderErrors(filter='all', search='') {
+  const list = document.getElementById('error-list');
+  const sevClass = { critical:'sev-critical', warning:'sev-warning', info:'sev-info' };
+  const filtered = errorsData.filter(e =>
+    (filter==='all' || e.cat===filter) &&
+    (!search || e.name.toLowerCase().includes(search) || e.cause.toLowerCase().includes(search))
+  );
+  list.innerHTML = filtered.map((e,i) => `
+    <div class="error-item" id="err-${i}">
+      <div class="error-head" onclick="toggleError('err-${i}')">
+        <span class="error-badge ${sevClass[e.sev]}">${e.sev.toUpperCase()}</span>
+        <span class="error-name">${e.name}</span>
+        <span class="error-cat">${e.cat}</span>
+      </div>
+      <div class="error-body">
+        <div class="error-section">
+          <h4>Root Cause</h4>
+          <pre>${e.cause}</pre>
+        </div>
+        <div class="error-section">
+          <h4>Fix Commands</h4>
+          <pre class="fix" onclick="copyText(\`${e.fix.replace(/`/g,'\\`')}\`)" style="cursor:pointer" title="Click to copy">${e.fix}</pre>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function toggleError(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.getAttribute('data-open') === 'true';
+  el.setAttribute('data-open', isOpen ? 'false' : 'true');
+}
+renderErrors();
+document.getElementById('err-filter').addEventListener('click', e => {
+  if (!e.target.classList.contains('ftab')) return;
+  document.querySelectorAll('#err-filter .ftab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderErrors(e.target.dataset.filter, document.getElementById('err-search').value.toLowerCase());
+});
+function filterErrors() {
+  const f = document.querySelector('#err-filter .ftab.active')?.dataset.filter || 'all';
+  renderErrors(f, document.getElementById('err-search').value.toLowerCase());
+}
+</script>
+</body>
+</html>
